@@ -1,0 +1,80 @@
+# ==============================
+# Python
+# ==============================
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+*.so
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# ==============================
+# Environment / Secrets
+# ==============================
+
+.env
+.env.*
+!.env.example
+
+# ==============================
+# Flask
+# ==============================
+
+instance/
+.webassets-cache/
+
+# ==============================
+# Local Database
+# ==============================
+
+*.db
+*.sqlite
+*.sqlite3
+
+# ==============================
+# Newsletter-generated files
+# ==============================
+
+/pdfs/*
+/covers/*
+
+# Keep the folders in Git
+!/pdfs/.gitkeep
+!/covers/.gitkeep
+
+# ==============================
+# Logs
+# ==============================
+
+*.log
+logs/
+
+# ==============================
+# IDE / Editors
+# ==============================
+
+.vscode/
+.idea/
+
+# ==============================
+# OS generated files
+# ==============================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==============================
+# Temporary files
+# ==============================
+
+*.tmp
+*.temp
+*.bak
+*.swp

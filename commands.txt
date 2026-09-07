@@ -1,0 +1,19 @@
+uv venv
+uv pip install -r requirements.txt
+.venv/Scripts/Activate  
+python app.py 
+
+to upload:
+http://127.0.0.1:5000/admin/upload
+
+to delete:
+curl.exe -X POST http://192.0.15.186:5000/admin/delete/4 -H "X-Admin-Token: *F!>6tdZ7r>f02B}V?o1.d8E7A_"
+
+SQL to check the id and title of the pdfs saved:
+1.python -c "import sqlite3; c=sqlite3.connect('database.db'); print(*c.execute('SELECT id, title FROM newsletters'), sep='\n'); c.close()"
+2.python
+import sqlite3
+c = sqlite3.connect("database.db")
+print(c.execute("SELECT * FROM site_visits").fetchall())
+c.close()
+

@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Newsletter Dashboard</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+
+        /* ==================================================
+           LAYOUT
+           ================================================== */
+
+        .dashboard {
+            min-height: 100vh;
+            display: flex;
+        }
+
+
+        /* ==================================================
+           SIDEBAR
+           ================================================== */
+
+        .sidebar {
+            width: 250px;
+            background: #111827;
+            color: white;
+
+            padding: 28px 20px;
+
+            display: flex;
+            flex-direction: column;
+
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+
+        .brand {
+            padding: 0 12px;
+            margin-bottom: 45px;
+        }
+
+
+        .brand h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+
+        .brand p {
+            margin: 5px 0 0;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+
+        .nav-title {
+            padding: 0 12px;
+            margin-bottom: 10px;
+
+            color: #6b7280;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 12px;
+
+            border-radius: 9px;
+
+            color: #d1d5db;
+            text-decoration: none;
+
+            font-size: 14px;
+
+            margin-bottom: 4px;
+        }
+
+
+        .nav-link:hover {
+            background: #1f2937;
+            color: white;
+        }
+
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+
+        .sidebar-bottom {
+            margin-top: auto;
+        }
+
+
+        .logout {
+            color: #fca5a5;
+        }
+
+
+        /* ==================================================
+           MAIN
+           ================================================== */
+
+        .main {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+
+            padding: 35px 40px;
+        }
+
+
+        /* ==================================================
+           HEADER
+           ================================================== */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 32px;
+        }
+
+
+        .page-title h2 {
+            margin: 0;
+
+            font-size: 28px;
+            font-weight: 700;
+
+            letter-spacing: -0.7px;
+        }
+
+
+        .page-title p {
+            margin: 6px 0 0;
+
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+
+        .view-site {
+            background: white;
+
+            border: 1px solid #e5e7eb;
+
+            padding: 10px 15px;
+
+            border-radius: 8px;
+
+            color: #374151;
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+
+        .view-site:hover {
+            background: #f9fafb;
+        }
+
+
+        /* ==================================================
+           STAT CARDS
+           ================================================== */
+
+        .stats-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 18px;
+
+            margin-bottom: 28px;
+        }
+
+
+        .stat-card {
+            background: white;
+
+            border: 1px solid #e7eaf0;
+
+            border-radius: 14px;
+
+            padding: 22px;
+
+            box-shadow:
+                0 2px 8px rgba(15, 23, 42, 0.03);
+        }
+
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 17px;
+        }
+
+
+        .stat-label {
+            color: #6b7280;
+
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+
+        .stat-icon {
+            width: 38px;
+            height: 38px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #f1f5f9;
+
+            border-radius: 10px;
+
+            font-size: 17px;
+        }
+
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: 750;
+
+            letter-spacing: -1px;
+        }
+
+
+        .stat-sub {
+            margin-top: 5px;
+
+            color: #9ca3af;
+
+            font-size: 12px;
+        }
+
+
+        /* ==================================================
+           TODAY
+           ================================================== */
+
+        .today-card {
+            background: #111827;
+            color: white;
+
+            border-radius: 14px;
+
+            padding: 24px;
+
+            margin-bottom: 28px;
+        }
+
+
+        .today-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 22px;
+        }
+
+
+        .today-header h3 {
+            margin: 0;
+
+            font-size: 16px;
+        }
+
+
+        .today-header span {
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+
+        .today-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 20px;
+        }
+
+
+        .today-item {
+            border-right: 1px solid #374151;
+            padding-right: 20px;
+        }
+
+
+        .today-item:last-child {
+            border-right: none;
+        }
+
+
+        .today-item span {
+            display: block;
+
+            color: #9ca3af;
+
+            font-size: 12px;
+
+            margin-bottom: 7px;
+        }
+
+
+        .today-item strong {
+            font-size: 25px;
+        }
+
+
+        /* ==================================================
+           CONTENT GRID
+           ================================================== */
+
+        .content-grid {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.5fr)
+                minmax(320px, 1fr);
+
+            gap: 22px;
+
+            margin-bottom: 28px;
+        }
+
+
+        .panel {
+            background: white;
+
+            border: 1px solid #e7eaf0;
+
+            border-radius: 14px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 2px 8px rgba(15, 23, 42, 0.03);
+        }
+
+
+        .panel-header {
+            padding: 20px 22px;
+
+            border-bottom: 1px solid #edf0f4;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+
+        .panel-header h3 {
+            margin: 0;
+
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+
+        .panel-header span {
+            color: #2b306b;
+            font-size: 12px;
+        }
+
+
+        /* ==================================================
+           TABLE
+           ================================================== */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            font-size: 13px;
+        }
+
+
+        th {
+            text-align: left;
+
+            padding: 12px 20px;
+
+            background: #fafbfc;
+
+            color: #6b7280;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.5px;
+        }
+
+
+        td {
+            padding: 15px 20px;
+
+            border-top: 1px solid #f0f2f5;
+
+            color: #374151;
+        }
+
+
+        tr:hover td {
+            background: #fafbfc;
+        }
+
+
+        .newsletter-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+
+        .download-count {
+            font-weight: 700;
+        }
+
+
+        .date {
+            color: #2b306b;
+            font-size: 12px;
+        }
+
+
+        /* ==================================================
+           DAILY TRAFFIC
+           ================================================== */
+
+        .traffic-list {
+            padding: 8px 22px 18px;
+        }
+
+
+        .traffic-row {
+            display: flex;
+            align-items: center;
+
+            padding: 13px 0;
+
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+
+        .traffic-row:last-child {
+            border-bottom: none;
+        }
+
+
+        .traffic-date {
+            width: 90px;
+
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+
+        .traffic-bar-container {
+            flex: 1;
+
+            margin: 0 15px;
+        }
+
+
+        .traffic-bar {
+            height: 7px;
+
+            background: #e5e7eb;
+
+            border-radius: 10px;
+
+            overflow: hidden;
+        }
+
+
+        .traffic-bar-fill {
+            height: 100%;
+
+            width: 60%;
+
+            background: #111827;
+
+            border-radius: 10px;
+        }
+
+
+        .traffic-number {
+            width: 45px;
+
+            text-align: right;
+
+            font-weight: 700;
+
+            font-size: 12px;
+        }
+
+
+        /* ==================================================
+           RECENT DOWNLOADS
+           ================================================== */
+
+        .recent-list {
+            padding: 8px 22px 18px;
+        }
+
+
+        .recent-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 14px 0;
+
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+
+        .recent-item:last-child {
+            border-bottom: none;
+        }
+
+
+        .recent-title {
+            font-size: 13px;
+            font-weight: 600;
+
+            max-width: 65%;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        .recent-time {
+            color: #2b306b;
+            font-size: 11px;
+        }
+
+
+        /* ==================================================
+           EMPTY
+           ================================================== */
+
+        .empty {
+            padding: 35px 20px;
+
+            text-align: center;
+
+            color: #9ca3af;
+
+            font-size: 13px;
+        }
+
+
+        /* ==================================================
+           RESPONSIVE
+           ================================================== */
+
+        @media (max-width: 1100px) {
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                width: 65px;
+                padding: 20px 10px;
+            }
+
+
+            .brand h1,
+            .brand p,
+            .nav-title,
+            .nav-link span:not(.nav-icon) {
+                display: none;
+            }
+
+
+            .brand {
+                padding: 0;
+                text-align: center;
+            }
+
+
+            .nav-link {
+                justify-content: center;
+            }
+
+
+            .main {
+                margin-left: 65px;
+                width: calc(100% - 65px);
+
+                padding: 25px 18px;
+            }
+
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .today-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+
+            .today-item {
+                border-right: none;
+                border-bottom: 1px solid #374151;
+
+                padding: 0 0 15px;
+            }
+
+
+            .today-item:last-child {
+                border-bottom: none;
+                padding-bottom: 0;
+            }
+
+
+            .topbar {
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+
+            .page-title h2 {
+                font-size: 23px;
+            }
+
+
+            .view-site {
+                display: none;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="dashboard">
+
+
+    <!-- ==================================================
+         SIDEBAR
+         ================================================== -->
+
+    <aside class="sidebar">
+
+
+        <div>
+
+            <div class="brand">
+
+                <h1>
+                    Newsletter
+                </h1>
+
+                <p>
+                    Administration
+                </p>
+
+            </div>
+
+
+            <div class="nav-title">
+                Dashboard
+            </div>
+
+
+            <a
+                href="#overview"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    ◈
+                </span>
+
+                <span>
+                    Overview
+                </span>
+
+            </a>
+
+
+            <a
+                href="#downloads"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    ↓
+                </span>
+
+                <span>
+                    Downloads
+                </span>
+
+            </a>
+
+
+            <a
+                href="#traffic"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    ↗
+                </span>
+
+                <span>
+                    Traffic
+                </span>
+
+            </a>
+
+        </div>
+
+
+        <div class="sidebar-bottom">
+
+            <a
+                href="{{ url_for('index') }}"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    ←
+                </span>
+
+                <span>
+                    Newsletter Library
+                </span>
+
+            </a>
+
+
+            <a
+                href="{{ url_for('dashboard_logout') }}"
+                class="nav-link logout"
+            >
+
+                <span class="nav-icon">
+                    ⎋
+                </span>
+
+                <span>
+                    Logout
+                </span>
+
+            </a>
+
+        </div>
+
+
+    </aside>
+
+
+    <!-- ==================================================
+         MAIN
+         ================================================== -->
+
+    <main class="main">
+
+
+        <!-- HEADER -->
+
+        <div class="topbar">
+
+            <div class="page-title">
+
+                <h2>
+                    Dashboard
+                </h2>
+
+                <p>
+                    Newsletter library performance and activity
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('index') }}"
+                class="view-site"
+            >
+                View newsletter library →
+            </a>
+
+        </div>
+
+
+        <!-- ==================================================
+             OVERVIEW
+             ================================================== -->
+
+        <section id="overview">
+
+
+            <div class="stats-grid">
+
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <span class="stat-label">
+                            Total Newsletters
+                        </span>
+
+                        <span class="stat-icon">
+                            📰
+                        </span>
+
+                    </div>
+
+                    <div class="stat-number">
+                        {{ total_newsletters }}
+                    </div>
+
+                    <div class="stat-sub">
+                        Published issues
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <span class="stat-label">
+                            Total Visits
+                        </span>
+
+                        <span class="stat-icon">
+                            👁
+                        </span>
+
+                    </div>
+
+                    <div class="stat-number">
+                        {{ total_visits }}
+                    </div>
+
+                    <div class="stat-sub">
+                        All recorded visits
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <span class="stat-label">
+                            Unique Visitors
+                        </span>
+
+                        <span class="stat-icon">
+                            👤
+                        </span>
+
+                    </div>
+
+                    <div class="stat-number">
+                        {{ unique_visitors }}
+                    </div>
+
+                    <div class="stat-sub">
+                        Individual visitors
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <span class="stat-label">
+                            PDF Downloads
+                        </span>
+
+                        <span class="stat-icon">
+                            ↓
+                        </span>
+
+                    </div>
+
+                    <div class="stat-number">
+                        {{ total_downloads }}
+                    </div>
+
+                    <div class="stat-sub">
+                        All newsletter downloads
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- TODAY -->
+
+            <div class="today-card">
+
+                <div class="today-header">
+
+                    <h3>
+                        Today's Activity
+                    </h3>
+
+                    <span>
+                        Current day
+                    </span>
+
+                </div>
+
+
+                <div class="today-grid">
+
+
+                    <div class="today-item">
+
+                        <span>
+                            Visits
+                        </span>
+
+                        <strong>
+                            {{ today_visits }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="today-item">
+
+                        <span>
+                            Unique Visitors
+                        </span>
+
+                        <strong>
+                            {{ today_unique_visitors }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="today-item">
+
+                        <span>
+                            PDF Downloads
+                        </span>
+
+                        <strong>
+                            {{ today_downloads }}
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- ==================================================
+             DOWNLOADS
+             ================================================== -->
+
+        <section
+            id="downloads"
+            class="content-grid"
+        >
+
+
+            <!-- DOWNLOADS BY NEWSLETTER -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <h3>
+                        Downloads by Newsletter
+                    </h3>
+
+                    <span>
+                        All time
+                    </span>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    {% if downloads_by_newsletter %}
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Newsletter
+                                    </th>
+
+                                    <th>
+                                        Date
+                                    </th>
+
+                                    <th>
+                                        Downloads
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                {% for newsletter in downloads_by_newsletter %}
+
+                                    <tr>
+
+                                        <td>
+
+                                            <div class="newsletter-name">
+                                                {{ newsletter.title }}
+                                            </div>
+
+                                        </td>
+
+
+                                        <td>
+
+                                            <span class="date">
+                                                {{ newsletter.publication_date }}
+                                            </span>
+
+                                        </td>
+
+
+                                        <td>
+
+                                            <span class="download-count">
+                                                {{ newsletter.downloads }}
+                                            </span>
+
+                                        </td>
+
+                                    </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    {% else %}
+
+                        <div class="empty">
+                            No downloads recorded yet.
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- RECENT DOWNLOADS -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <h3>
+                        Recent Downloads
+                    </h3>
+
+                    <span>
+                        Latest 20
+                    </span>
+
+                </div>
+
+
+                {% if recent_downloads %}
+
+                    <div class="recent-list">
+
+                        {% for download in recent_downloads %}
+
+                            <div class="recent-item">
+
+                                <div class="recent-title">
+                                    {{ download.title }}
+                                </div>
+
+                                <div class="recent-time">
+                                    {{ download.downloaded_at }}
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty">
+                        No downloads recorded yet.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+        </section>
+
+
+        <!-- ==================================================
+             TRAFFIC
+             ================================================== -->
+
+        <section
+            id="traffic"
+            class="panel"
+        >
+
+            <div class="panel-header">
+
+                <h3>
+                    Daily Traffic
+                </h3>
+
+                <span>
+                    Last 30 days
+                </span>
+
+            </div>
+
+
+            {% if daily_visits %}
+
+                <div class="traffic-list">
+
+                    {% for day in daily_visits %}
+
+                        <div class="traffic-row">
+
+
+                            <div class="traffic-date">
+
+                                {{ day.visit_date }}
+
+                            </div>
+
+
+                            <div class="traffic-bar-container">
+
+                                <div class="traffic-bar">
+
+                                    <div
+                                        class="traffic-bar-fill"
+                                        {{ 'style="width: ' ~ ((day.visits / daily_visits[0].visits * 100) if daily_visits[0].visits else 0) ~ ';"' }}
+                                    ></div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="traffic-number">
+
+                                {{ day.visits }}
+
+                            </div>
+
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty">
+                    No traffic recorded yet.
+                </div>
+
+            {% endif %}
+
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+</body>
+
+</html>

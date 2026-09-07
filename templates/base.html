@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+        Newsletter Potal
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<header class="site-header">
+
+    <div class="container header-inner">
+
+        <a
+            href="{{ url_for('index') }}"
+            class="brand"
+        >
+
+            <img
+                src="{{ url_for('static', filename='images/logo.png') }}"
+                alt="Logo"
+                class="brand-logo"
+            >
+
+            <span class="company-name">
+                Morad Yousuf Behbehani
+            </span>
+
+        </a>
+
+
+        <nav>
+
+            <a href="{{ url_for('index') }}">
+                Newsletters
+            </a>
+
+            <!-- <a href="{{ url_for('upload_page') }}">
+                Upload
+            </a> -->
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+{% with messages = get_flashed_messages(
+    with_categories=true
+) %}
+
+    {% if messages %}
+
+        <div class="container messages">
+
+            {% for category, message in messages %}
+
+                <div
+                    class="message {{ category }}"
+                >
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+{% endwith %}
+
+
+{% block content %}
+{% endblock %}
+
+
+<footer class="site-footer">
+
+    <div class="container">
+
+        <p>
+            Internal Company Newsletters
+        </p>
+
+    </div>
+
+</footer>
+
+
+{% block scripts %}
+{% endblock %}
+
+</body>
+
+</html>

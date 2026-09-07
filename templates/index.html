@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Newsletter Library
+{% endblock %}
+
+
+{% block content %}
+
+<section class="hero">
+
+    <div class="container">
+
+        <p class="eyebrow">
+            Company Publications
+        </p>
+
+        <h1>
+            Newsletter Library
+        </h1>
+
+        <p class="hero-description">
+            Browse our collection of company newsletters.
+        </p>
+
+    </div>
+
+</section>
+
+
+<main class="container archive">
+
+
+    <!-- SEARCH -->
+
+    <!-- <div class="search-box">
+
+        <label for="searchInput">
+            Search newsletters
+        </label>
+
+        <input
+            type="search"
+            id="searchInput"
+            placeholder="Search titles and newsletter contents..."
+            autocomplete="off"
+        >
+
+    </div> -->
+
+
+    <!-- YEAR NAVIGATION -->
+
+    <!-- <div class="year-navigation">
+
+        {% for year in years %}
+
+            <button
+                class="year-button {% if loop.first %}active{% endif %}"
+                data-year="{{ year.year }}"
+            >
+                {{ year.year }}
+            </button>
+
+        {% endfor %}
+
+
+        <button
+            class="year-button"
+            data-year="all"
+        >
+            All
+        </button>
+
+    </div> -->
+
+
+    <!-- SEARCH RESULTS -->
+
+    <!-- <div
+        id="searchResults"
+        class="search-results hidden"
+    ></div> -->
+
+
+    <!-- ARCHIVE -->
+
+    <!-- <div id="archive">
+
+        {% for year in years %}
+
+            <section
+                class="year-section"
+                data-year-section="{{ year.year }}"
+                {% if not loop.first %}
+                    style="display:none"
+                {% endif %}
+            >
+
+                <div class="year-heading">
+
+                    <h2>
+                        {{ year.year }}
+                    </h2>
+
+                    <span>
+                        {{ year.count }}
+                        issue{% if year.count != 1 %}s{% endif %}
+                    </span>
+
+                </div>
+
+
+                <div class="newsletter-grid">
+
+                    {% for newsletter in newsletters %}
+
+                        {% if newsletter.publication_date.startswith(
+                            year.year
+                        ) %}
+
+                            <article
+                                class="newsletter-card"
+                            >
+
+                                <a
+                                    href="{{
+                                        url_for(
+                                            'newsletter',
+                                            newsletter_id=
+                                                newsletter.id
+                                        )
+                                    }}"
+                                    class="cover-link"
+                                >
+
+                                    {% if newsletter.cover_filename %}
+
+                                        <img
+                                            src="{{
+                                                url_for(
+                                                    'cover_file',
+                                                    filename=
+                                                        newsletter.cover_filename
+                                                )
+                                            }}"
+                                            alt="{{ newsletter.title }}"
+                                            loading="lazy"
+                                        >
+
+                                    {% else %}
+
+                                        <div class="cover-placeholder">
+                                            {{ newsletter.title }}
+                                        </div>
+
+                                    {% endif %}
+
+                                </a>
+
+
+                                <div class="card-body">
+
+                                    <div class="card-date">
+
+                                        {{ newsletter.publication_date }}
+
+                                    </div>
+
+
+                                    <h3 class="card-title">
+
+                                        {{ newsletter.title }}
+
+                                    </h3>
+
+
+                                    {% if newsletter.description %}
+
+                                        <p class="card-description">
+
+                                            {{
+                                                newsletter.description
+                                            }}
+
+                                        </p>
+
+                                    {% endif %}
+
+
+                                    <a
+                                        href="{{
+                                            url_for(
+                                                'newsletter',
+                                                newsletter_id=
+                                                    newsletter.id
+                                            )
+                                        }}"
+                                        class="read-link"
+                                    >
+                                        View newsletter →
+                                    </a>
+
+                                </div>
+
+                            </article>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+        {% endfor %}
+
+
+        {% if not newsletters %}
+
+            <div class="empty-state">
+
+                <h2>
+                    No newsletters yet
+                </h2>
+
+                <p>
+                    Upload your first newsletter to get started.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div> -->
+
+   <div class="featured-pdfs">
+
+        {% for newsletter in newsletters %}
+
+            <a
+                href="{{ url_for(
+                    'pdf_file',
+                    filename=newsletter.pdf_filename
+                ) }}"
+                target="_blank"
+                class="featured-pdf"
+                download
+            >
+
+                {% if newsletter.cover_filename %}
+
+                    <img
+                        src="{{ url_for(
+                            'cover_file',
+                            filename=newsletter.cover_filename
+                        ) }}"
+                        alt="{{ newsletter.title }}"
+                        loading="lazy"
+                    >
+
+                {% else %}
+
+                    <div class="cover-placeholder">
+                        {{ newsletter.title }}
+                    </div>
+
+                {% endif %}
+
+            </a>
+
+        {% endfor %}
+
+
+    </div>
+
+</main>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script
+    src="{{ url_for(
+        'static',
+        filename='js/app.js'
+    ) }}"
+></script>
+
+{% endblock %}

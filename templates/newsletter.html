@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+
+{{ newsletter.title }}
+
+{% endblock %}
+
+
+{% block content %}
+
+<main class="newsletter-page container">
+
+
+    <div class="back-link">
+
+        <a href="{{ url_for('index') }}">
+            ← Back to archive
+        </a>
+
+    </div>
+
+
+    <div class="newsletter-header">
+
+        <p class="eyebrow">
+            Newsletter
+        </p>
+
+        <h1>
+            {{ newsletter.title }}
+        </h1>
+
+        <p class="newsletter-date">
+            {{ newsletter.publication_date }}
+        </p>
+
+
+        {% if newsletter.description %}
+
+            <p class="newsletter-description">
+
+                {{ newsletter.description }}
+
+            </p>
+
+        {% endif %}
+
+
+        <div class="newsletter-actions">
+
+            <a
+                class="button"
+                href="{{ url_for(
+                    'pdf_file',
+                    filename=
+                        newsletter.pdf_filename
+                ) }}"
+                target="_blank"
+            >
+                Open PDF
+            </a>
+
+
+            <a
+                class="button secondary"
+                href="{{ url_for(
+                    'pdf_file',
+                    filename=
+                        newsletter.pdf_filename
+                ) }}"
+                download
+            >
+                Download PDF
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="pdf-viewer">
+
+        <iframe
+            src="{{ url_for(
+                'pdf_file',
+                filename=
+                    newsletter.pdf_filename
+            ) }}"
+            title="{{ newsletter.title }}"
+        >
+        </iframe>
+
+    </div>
+
+
+    <!-- ADMIN DELETE -->
+
+    <div class="admin-danger">
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'delete_newsletter',
+                newsletter_id=
+                    newsletter.id
+            ) }}"
+            onsubmit="return confirm(
+                'Are you sure you want to delete this newsletter?'
+            );"
+        >
+
+            <!-- <button
+                type="submit"
+                class="delete-button"
+            >
+                Delete Newsletter
+            </button> -->
+
+        </form>
+
+    </div>
+
+
+</main>
+
+{% endblock %}
