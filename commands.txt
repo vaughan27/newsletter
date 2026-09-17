@@ -17,3 +17,4 @@ c = sqlite3.connect("database.db")
 print(c.execute("SELECT * FROM site_visits").fetchall())
 c.close()
 
+http://127.0.0.1:5000/dashboard
