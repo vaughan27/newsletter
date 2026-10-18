@@ -200,13 +200,9 @@ def init_db():
 def allowed_file(filename):
 
     return (
-        "."
-        in filename
-        and
-        filename.rsplit(
-            ".",
-            1
-        )[1].lower()
+        bool(filename)
+        and "." in filename
+        and filename.rsplit(".", 1)[1].lower()
         in ALLOWED_EXTENSIONS
     )
 
@@ -224,6 +220,14 @@ def clean_filename(filename):
     )
 
     return filename
+
+
+def require_admin():
+
+    return session.get(
+        "dashboard_authenticated",
+        False
+    )
 
 
 def extract_pdf_text(pdf_path):
@@ -687,33 +691,29 @@ def search():
 
 
 # ==================================================
-# UPLOAD PAGE
+# UPLOAD PAGE — ADMIN LOGIN REQUIRED
 # ==================================================
 
-@app.route(
-    "/admin/upload",
-    methods=["GET"]
-)
+@app.route("/admin/upload", methods=["GET"])
 def upload_page():
 
-    return render_template(
-        "upload.html"
-    )
+    if not require_admin():
+        return redirect(url_for("dashboard_login"))
+
+    return render_template("upload.html")
 
 
 # ==================================================
-# UPLOAD NEWSLETTER
+# UPLOAD NEWSLETTER — ADMIN LOGIN REQUIRED
 # ==================================================
 
-@app.route(
-    "/admin/upload",
-    methods=["POST"]
-)
+@app.route("/admin/upload", methods=["POST"])
 def upload():
 
-    pdf = request.files.get(
-        "pdf"
-    )
+    if not require_admin():
+        return redirect(url_for("dashboard_login"))
+
+    pdf = request.files.get("pdf")
 
     title = request.form.get(
         "title",
@@ -734,33 +734,23 @@ def upload():
     # VALIDATION
     # ----------------------------------------------
 
-    if not pdf:
+    if not pdf or not pdf.filename:
 
         flash(
             "Please select a PDF.",
             "error"
         )
 
-        return redirect(
-            url_for(
-                "upload_page"
-            )
-        )
+        return redirect(url_for("upload_page"))
 
-    if not allowed_file(
-        pdf.filename
-    ):
+    if not allowed_file(pdf.filename):
 
         flash(
             "Only PDF files are allowed.",
             "error"
         )
 
-        return redirect(
-            url_for(
-                "upload_page"
-            )
-        )
+        return redirect(url_for("upload_page"))
 
     if not title:
 
@@ -769,11 +759,7 @@ def upload():
             "error"
         )
 
-        return redirect(
-            url_for(
-                "upload_page"
-            )
-        )
+        return redirect(url_for("upload_page"))
 
     if not publication_date:
 
@@ -782,25 +768,19 @@ def upload():
             "error"
         )
 
-        return redirect(
-            url_for(
-                "upload_page"
-            )
-        )
+        return redirect(url_for("upload_page"))
 
-    # ----------------------------------------------
+    # --------------------------------------------------
     # FILE NAMES
-    # ----------------------------------------------
+    # --------------------------------------------------
 
-    original_name = clean_filename(
-        pdf.filename
-    )
+    original_name = clean_filename(pdf.filename)
 
     unique_id = uuid.uuid4().hex[:8]
 
     pdf_filename = (
-        f"{publication_date}"
-        f"_{unique_id}_"
+        f"{publication_date}_"
+        f"{unique_id}_"
         f"{original_name}"
     )
 
@@ -810,10 +790,7 @@ def upload():
     )
 
     cover_filename = (
-        os.path.splitext(
-            pdf_filename
-        )[0]
-        + ".png"
+        os.path.splitext(pdf_filename)[0] + ".png"
     )
 
     cover_path = os.path.join(
@@ -821,58 +798,35 @@ def upload():
         cover_filename
     )
 
-    # ----------------------------------------------
-    # SAVE PDF
-    # ----------------------------------------------
+    # --------------------------------------------------
+    # SAVE AND PROCESS PDF
+    # --------------------------------------------------
 
-    pdf.save(
-        pdf_path
-    )
+    pdf.save(pdf_path)
+
+    connection = None
 
     try:
 
-        # ------------------------------------------
-        # EXTRACT TEXT
-        # ------------------------------------------
+        extracted_text = extract_pdf_text(pdf_path)
 
-        extracted_text = (
-            extract_pdf_text(
-                pdf_path
-            )
-        )
-
-        # ------------------------------------------
-        # GENERATE COVER
-        # ------------------------------------------
-
-        if not generate_cover(
-            pdf_path,
-            cover_path
-        ):
-
+        if not generate_cover(pdf_path, cover_path):
             raise Exception(
                 "Could not generate newsletter cover."
             )
-
-        # ------------------------------------------
-        # DATABASE
-        # ------------------------------------------
 
         connection = get_db()
 
         connection.execute(
             """
             INSERT INTO newsletters (
-
                 title,
                 publication_date,
                 description,
                 pdf_filename,
                 cover_filename,
                 extracted_text
-
             )
-
             VALUES (?, ?, ?, ?, ?, ?)
             """,
             (
@@ -886,61 +840,36 @@ def upload():
         )
 
         connection.commit()
-
         connection.close()
+        connection = None
 
     except Exception as error:
 
-        print(
-            "UPLOAD ERROR:",
-            error
-        )
+        print("UPLOAD ERROR:", error)
 
-        # ------------------------------------------
-        # CLEAN UP PDF
-        # ------------------------------------------
+        if connection is not None:
+            connection.rollback()
+            connection.close()
 
-        if os.path.exists(
-            pdf_path
-        ):
+        if os.path.exists(pdf_path):
+            os.remove(pdf_path)
 
-            os.remove(
-                pdf_path
-            )
-
-        # ------------------------------------------
-        # CLEAN UP COVER
-        # ------------------------------------------
-
-        if os.path.exists(
-            cover_path
-        ):
-
-            os.remove(
-                cover_path
-            )
+        if os.path.exists(cover_path):
+            os.remove(cover_path)
 
         flash(
             "There was a problem processing the PDF.",
             "error"
         )
 
-        return redirect(
-            url_for(
-                "upload_page"
-            )
-        )
+        return redirect(url_for("upload_page"))
 
     flash(
         "Newsletter uploaded successfully.",
         "success"
     )
 
-    return redirect(
-        url_for(
-            "index"
-        )
-    )
+    return redirect(url_for("index"))
 
 
 # ==================================================
@@ -953,15 +882,10 @@ def upload():
 )
 def delete_newsletter(newsletter_id):
 
-    token = request.headers.get(
-        "X-Admin-Token"
-    )
+    token = request.headers.get("X-Admin-Token")
 
     if not token or token != ADMIN_TOKEN:
-
-        return jsonify({
-            "error": "Unauthorized"
-        }), 401
+        return jsonify({"error": "Unauthorized"}), 401
 
     connection = get_db()
 
@@ -975,66 +899,29 @@ def delete_newsletter(newsletter_id):
     ).fetchone()
 
     if newsletter is None:
-
         connection.close()
-
-        return jsonify({
-            "error": "Newsletter not found"
-        }), 404
-
-    # ----------------------------------------------
-    # PDF PATH
-    # ----------------------------------------------
+        return jsonify({"error": "Newsletter not found"}), 404
 
     pdf_path = os.path.join(
         PDF_FOLDER,
         newsletter["pdf_filename"]
     )
 
-    # ----------------------------------------------
-    # COVER PATH
-    # ----------------------------------------------
-
     cover_path = None
 
     if newsletter["cover_filename"]:
-
         cover_path = os.path.join(
             COVER_FOLDER,
             newsletter["cover_filename"]
         )
 
-    # ----------------------------------------------
-    # DELETE PDF
-    # ----------------------------------------------
+    # Delete associated files.
 
-    if os.path.exists(
-        pdf_path
-    ):
+    if os.path.exists(pdf_path):
+        os.remove(pdf_path)
 
-        os.remove(
-            pdf_path
-        )
-
-    # ----------------------------------------------
-    # DELETE COVER
-    # ----------------------------------------------
-
-    if (
-        cover_path
-        and
-        os.path.exists(
-            cover_path
-        )
-    ):
-
-        os.remove(
-            cover_path
-        )
-
-    # ----------------------------------------------
-    # DELETE DOWNLOAD STATISTICS
-    # ----------------------------------------------
+    if cover_path and os.path.exists(cover_path):
+        os.remove(cover_path)
 
     connection.execute(
         """
@@ -1043,10 +930,6 @@ def delete_newsletter(newsletter_id):
         """,
         (newsletter_id,)
     )
-
-    # ----------------------------------------------
-    # DELETE NEWSLETTER
-    # ----------------------------------------------
 
     connection.execute(
         """
@@ -1057,7 +940,6 @@ def delete_newsletter(newsletter_id):
     )
 
     connection.commit()
-
     connection.close()
 
     return jsonify({
@@ -1065,25 +947,61 @@ def delete_newsletter(newsletter_id):
         "message": "Newsletter deleted"
     })
 
-# ============================================================
+
+# ==================================================
+# DASHBOARD LOGIN
+# ==================================================
+
+@app.route("/dashboard/login", methods=["GET", "POST"])
+def dashboard_login():
+
+    if request.method == "POST":
+
+        token = request.form.get("token", "")
+
+        if token and token == ADMIN_TOKEN:
+
+            session.clear()
+
+            session["dashboard_authenticated"] = True
+
+            return redirect(url_for("dashboard"))
+
+        return render_template(
+            "dashboard_login.html",
+            error="Invalid admin token."
+        )
+
+    return render_template("dashboard_login.html")
+
+
+# ==================================================
+# DASHBOARD LOGOUT
+# ==================================================
+
+@app.route("/dashboard/logout")
+def dashboard_logout():
+
+    session.clear()
+
+    return redirect(url_for("dashboard_login"))
+
+
+# ==================================================
 # DASHBOARD
-# ============================================================
+# ==================================================
 
 @app.route("/dashboard")
 def dashboard():
 
-    if not session.get(
-        "dashboard_authenticated"
-    ):
-        return redirect(
-            url_for("dashboard_login")
-        )
+    if not require_admin():
+        return redirect(url_for("dashboard_login"))
 
     connection = get_db()
 
-    # --------------------------------------------------------
+    # --------------------------------------------------
     # OVERVIEW
-    # --------------------------------------------------------
+    # --------------------------------------------------
 
     total_newsletters = connection.execute(
         """
@@ -1113,9 +1031,9 @@ def dashboard():
         """
     ).fetchone()["count"]
 
-    # --------------------------------------------------------
+    # --------------------------------------------------
     # TODAY
-    # --------------------------------------------------------
+    # --------------------------------------------------
 
     today_visits = connection.execute(
         """
@@ -1141,9 +1059,9 @@ def dashboard():
         """
     ).fetchone()["count"]
 
-    # --------------------------------------------------------
+    # --------------------------------------------------
     # DOWNLOADS BY NEWSLETTER
-    # --------------------------------------------------------
+    # --------------------------------------------------
 
     downloads_by_newsletter = connection.execute(
         """
@@ -1159,9 +1077,9 @@ def dashboard():
         """
     ).fetchall()
 
-    # --------------------------------------------------------
+    # --------------------------------------------------
     # DAILY TRAFFIC
-    # --------------------------------------------------------
+    # --------------------------------------------------
 
     daily_visits = connection.execute(
         """
@@ -1176,9 +1094,9 @@ def dashboard():
         """
     ).fetchall()
 
-    # --------------------------------------------------------
+    # --------------------------------------------------
     # DAILY DOWNLOADS
-    # --------------------------------------------------------
+    # --------------------------------------------------
 
     daily_downloads = connection.execute(
         """
@@ -1192,9 +1110,9 @@ def dashboard():
         """
     ).fetchall()
 
-    # --------------------------------------------------------
+    # --------------------------------------------------
     # RECENT DOWNLOADS
-    # --------------------------------------------------------
+    # --------------------------------------------------
 
     recent_downloads = connection.execute(
         """
@@ -1233,51 +1151,10 @@ def dashboard():
 
 if __name__ == "__main__":
 
-    # ============================================================
-    # DASHBOARD AUTHENTICATION
-    # ============================================================
-
-    @app.route("/dashboard/login", methods=["GET", "POST"])
-    def dashboard_login():
-
-        if request.method == "POST":
-
-            token = request.form.get("token", "")
-
-            if token == ADMIN_TOKEN:
-
-                session["dashboard_authenticated"] = True
-
-                return redirect(
-                    url_for("dashboard")
-                )
-
-            return render_template(
-                "dashboard_login.html",
-                error="Invalid admin token."
-            )
-
-        return render_template(
-            "dashboard_login.html"
-        )
-
-
-    @app.route("/dashboard/logout")
-    def dashboard_logout():
-
-        session.pop(
-            "dashboard_authenticated",
-            None
-        )
-
-        return redirect(
-            url_for("dashboard_login")
-        )
-
     init_db()
 
     app.run(
         host="0.0.0.0",
         port=5000,
-        debug=True
+        debug=False
     )
