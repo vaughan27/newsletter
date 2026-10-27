@@ -1,11 +1,9 @@
 uv venv
 uv pip install -r requirements.txt
-.venv/Scripts/Activate  
-python app.py 
 uv run python app.py
 
 to upload:
-http://127.0.0.1:5000/admin/upload
+http://192.0.15.108:5000/admin/upload
 
 to delete:
 curl.exe -X POST http://192.0.15.186:5000/admin/delete/4 -H "X-Admin-Token: *F!>6tdZ7r>f02B}V?o1.d8E7A_"
@@ -18,4 +16,5 @@ c = sqlite3.connect("database.db")
 print(c.execute("SELECT * FROM site_visits").fetchall())
 c.close()
 
+dasdboard: 
 http://127.0.0.1:5000/dashboard
