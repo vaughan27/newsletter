@@ -1,5 +1,7 @@
 uv venv
 uv pip install -r requirements.txt
+sometimes local may not work without:
+(Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned) ; (& c:\Users\vaughan\Desktop\newsletter\.venv\Scripts\Activate.ps1)
 uv run python app.py
 
 to upload:
