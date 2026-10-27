@@ -78,3 +78,5 @@ desktop.ini
 *.temp
 *.bak
 *.swp
+
+.python-version
