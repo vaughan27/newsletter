@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Secrets and local config
+.env
+backend/.env
+
+# Uploaded files (PDFs + generated covers)
+backend/storage/pdfs/*
+backend/storage/covers/*
+!backend/storage/pdfs/.gitkeep
+!backend/storage/covers/.gitkeep
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+.DS_Store
