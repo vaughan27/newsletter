@@ -1,10 +1,4 @@
-// Dev: "/api" (Vite proxy). Production build behind nginx: "/newsletter-api". Set in vite.config.ts.
-const API_BASE: string = __API_BASE__;
-
-/** The backend returns URLs like "/api/newsletters/1/cover"; point them at the configured API base. */
-export function apiUrl(url: string): string {
-  return url.startsWith("/api/") ? API_BASE + url.slice(4) : url;
-}
+const API_BASE = "/api";
 const AUTH_KEY = "newsletter_portal_auth";
 export const AUTH_EXPIRED_EVENT = "auth:expired";
 
