@@ -1,11 +1,10 @@
 """Anonymous visitor identification.
 
 Normal users never log in. We give each browser a random, first-party, HttpOnly cookie
-(`visitor_id`, 1 year). Unique visitors are counted by distinct cookie id. No raw IPs are
-stored (only a salted hash), and the id isn't linked to any person.
+(`visitor_id`, 1 year). Unique visitors are counted by distinct cookie id. The client IP
+address is stored with each visit/download; the cookie id itself isn't linked to a person.
 """
 
-import hashlib
 import re
 import uuid
 
@@ -44,8 +43,7 @@ def set_visitor_cookie(response: Response, visitor_id: str) -> None:
 
 
 def client_fingerprint(request: Request) -> tuple[str, str]:
-    """(user_agent, salted ip hash)"""
+    """(user_agent, client ip address)"""
     user_agent = request.headers.get("user-agent", "")[:300]
     ip = request.client.host if request.client else ""
-    ip_hash = hashlib.sha256(f"{settings.secret_key}:{ip}".encode()).hexdigest() if ip else ""
-    return user_agent, ip_hash
+    return user_agent, ip[:45]

@@ -61,13 +61,15 @@ cd ../backend
 uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers
 ```
 
+Behind a reverse proxy, run uvicorn with `--forwarded-allow-ips=<proxy ip>` (or `'*'` if only the proxy can reach it) so the real visitor IP is recorded instead of the proxy's.
+
 If `frontend/dist` exists, FastAPI serves the React app and the API from the same origin, so no CORS setup is needed. Put nginx/Caddy in front for HTTPS and set `client_max_body_size 60m` (uploads allow 50 MB). Back up `backend/storage/` along with the database.
 
 ## How the main features work
 
 **Cover generation.** On upload, the first page of the PDF is rendered (PyMuPDF) and center-cropped/scaled with Pillow to one fixed size, saved as JPEG. A custom image goes through the *same* crop, so all covers match. The ratio and size are in `.env`: `COVER_ASPECT_WIDTH`, `COVER_ASPECT_HEIGHT`, `COVER_WIDTH_PX` (default 16:9, 1280×720 to match the existing cards and slide decks). Admins can later change the cover, or replace the PDF, from **Dashboard → Newsletters**.
 
-**Anonymous analytics (no login).** The server gives each browser a random first-party cookie (`visitor_id`, HttpOnly, SameSite=Lax, 1 year). The public pages call `POST /api/track/visit` on load; downloads are counted inside `GET /api/newsletters/{id}/download`. Unique visitors = distinct cookie ids. Only a salted hash of the IP is stored, never the raw address. Obvious bots/crawlers are ignored, and signed-in staff aren't counted. Cookie-clearing or a second browser counts as a new visitor, which is the normal limit of cookie-based counting.
+**Anonymous analytics (no login).** The server gives each browser a random first-party cookie (`visitor_id`, HttpOnly, SameSite=Lax, 1 year). The public pages call `POST /api/track/visit` on load; downloads are counted inside `GET /api/newsletters/{id}/download`. Unique visitors = distinct cookie ids. The client IP address is stored with each visit and download (see the proxy note below). Obvious bots/crawlers are ignored, and signed-in staff aren't counted. Cookie-clearing or a second browser counts as a new visitor, which is the normal limit of cookie-based counting.
 
 **Auth.** `POST /api/auth/login` returns a bearer JWT that expires after 8 hours (`ACCESS_TOKEN_EXPIRE_MINUTES=480`). The user is re-read from the database on every request, so disabling/deleting/demoting someone takes effect immediately. The UI also signs out on expiry. Login is throttled (5 failures per 15 min per IP + username, in memory).
 

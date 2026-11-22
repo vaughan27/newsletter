@@ -80,14 +80,14 @@ def download_pdf(newsletter_id: int, request: Request, db: DbSession):
         raise HTTPException(status.HTTP_404_NOT_FOUND, "PDF not found.")
 
     visitor_id = get_or_create_visitor_id(request)
-    user_agent, ip_hash = client_fingerprint(request)
+    user_agent, ip_address = client_fingerprint(request)
     if not is_bot(user_agent):
         db.add(
             Download(
                 newsletter_id=newsletter.id,
                 visitor_id=visitor_id,
                 user_agent=user_agent,
-                ip_hash=ip_hash,
+                ip_address=ip_address,
             )
         )
         db.commit()

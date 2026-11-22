@@ -25,7 +25,7 @@ def track_visit(payload: VisitIn, request: Request, db: DbSession) -> Response:
     visitor_id = get_or_create_visitor_id(request)
     set_visitor_cookie(response, visitor_id)
 
-    user_agent, ip_hash = client_fingerprint(request)
+    user_agent, ip_address = client_fingerprint(request)
     if is_bot(user_agent):
         return response
 
@@ -39,7 +39,7 @@ def track_visit(payload: VisitIn, request: Request, db: DbSession) -> Response:
             path=payload.path,
             newsletter_id=newsletter_id,
             user_agent=user_agent,
-            ip_hash=ip_hash,
+            ip_address=ip_address,
         )
     )
     db.commit()
