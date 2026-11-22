@@ -1,4 +1,4 @@
-const API_BASE = "/api";
+const API_BASE = "/newsletter-api";
 const AUTH_KEY = "newsletter_portal_auth";
 export const AUTH_EXPIRED_EVENT = "auth:expired";
 
