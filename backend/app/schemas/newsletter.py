@@ -1,9 +1,15 @@
+import os
+
+from dotenv import load_dotenv
+
 from datetime import date, datetime
 
 from pydantic import BaseModel
 
 from app.models.newsletter import Newsletter
 
+load_dotenv()
+API_PUBLIC_PREFIX = os.getenv("API_PUBLIC_PREFIX", "/api").rstrip("/")
 
 class NewsletterOut(BaseModel):
     id: int
@@ -28,9 +34,9 @@ def to_out(n: Newsletter) -> NewsletterOut:
         title=n.title,
         description=n.description,
         publication_date=n.publication_date,
-        cover_url=f"/api/newsletters/{n.id}/cover?v={version}",
-        pdf_url=f"/api/newsletters/{n.id}/pdf",
-        download_url=f"/api/newsletters/{n.id}/download",
+        cover_url=f"{API_PUBLIC_PREFIX}/newsletters/{n.id}/cover?v={version}",
+        pdf_url=f"{API_PUBLIC_PREFIX}/newsletters/{n.id}/pdf",
+        download_url=f"{API_PUBLIC_PREFIX}/newsletters/{n.id}/download",
         cover_source=n.cover_source,
         page_count=n.page_count,
         pdf_size_bytes=n.pdf_size_bytes,
