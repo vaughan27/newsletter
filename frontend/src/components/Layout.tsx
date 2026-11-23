@@ -9,7 +9,7 @@ export function Layout() {
       <header className="site-header">
         <div className="site-header__inner container">
           <Link to="/" className="brand">
-            <img src="/logo.png" alt="Morad Yousuf Behbehani – Since 1935" className="brand__logo" />
+            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Morad Yousuf Behbehani – Since 1935" className="brand__logo" />
             <span className="brand__name">Morad Yousuf Behbehani</span>
           </Link>
           <nav className="site-nav" aria-label="Main">
