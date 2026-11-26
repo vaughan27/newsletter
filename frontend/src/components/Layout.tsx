@@ -8,7 +8,7 @@ export function Layout() {
     <>
       <header className="site-header">
         <div className="site-header__inner container">
-          <Link to="/" className="brand">
+          <Link to="http://192.0.15.99/" className="brand">
             <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Morad Yousuf Behbehani – Since 1935" className="brand__logo" />
             <span className="brand__name">Morad Yousuf Behbehani</span>
           </Link>
